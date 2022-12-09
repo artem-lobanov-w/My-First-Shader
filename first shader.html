@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+    <style>
+        body { margin: 0; }
+    </style>
+    lol
+    <script id="fragShader" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D tex;
+        uniform vec3 light;
+        uniform sampler2D norm;
+        void main() {
+            vec2 pixel = gl_FragCoord.xy / res.xy;
+            vec4 color = texture2D(tex,pixel);
+
+            float dist = distance(gl_FragCoord.xy,light.xy);
+            vec3 NormalVector = texture2D(norm,pixel).xyz;
+            vec3 LightVector = vec3(light.x - gl_FragCoord.x, light.y - gl_FragCoord.y, 1.0);
+
+            NormalVector.x -= 0.7;
+            NormalVector.y -= 0.7;
+
+            NormalVector = normalize(NormalVector);
+            LightVector = normalize(LightVector);
+
+            if(light.z * res.x > dist){
+                float diffuse = max(dot( NormalVector, LightVector ),0.0);
+                float distanceFactor = 1.0 - dist/(light.z * res.x);
+                color.x *= 1.5;
+                color.y *= 1.5;
+                diffuse *= 2.8;
+                gl_FragColor = color * diffuse * distanceFactor;
+            } else {
+                gl_FragColor = vec4(0.0);
+            }
+       }
+    </script>
+    
+    <!-- LightVector = vec3(LightVector.x - 0.5, LightVector.y - 0.5, LightVector.z); -->
+    <!-- <script src="./js/three.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
+    <script src="./js/js.js"></script>
+
+</body>
+
+</html>
